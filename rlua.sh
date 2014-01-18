@@ -46,5 +46,4 @@ for key in ${KEYS[@]}; do
     echo $key
 done
 echo $@
-# ) | grep -v '^[[:space:]]*--' | 
 ) | sed 's/--.*//g' | tr '\n' ' ' | sed 's/[[:space:]][[:space:]]*/ /g' | redis-cli -p $PORT --raw
