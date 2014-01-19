@@ -3,15 +3,19 @@ if ARGV[1] == nil then
 end 
 local m = tonumber(ARGV[1])
 local t = {}
+for i, subnet in ipairs(redis.call("keys", "mo:subnets:*")) do
+    redis.call("del", subnet)
+end
 for i, addresses in ipairs(redis.call("keys", "mo:user:*:addresses")) do
-  local prefix = string.match(addresses, "(.+:%d+):addresses$")
+  local prefix, id = string.match(addresses, "(.+:(%d+)):addresses$")
   if prefix ~= nil then    
-    local key = prefix..":subnets"
-    redis.call("del", key)
-    table.insert(t, key)
+    local userkey = prefix..":subnets"
+    redis.call("del", userkey)
     for j, ip in ipairs(redis.call("hkeys", addresses)) do
-      local s = subnet(ip, m)
-      redis.call("sadd", key, s..":"..m)
+      local s = subnet(ip, m)..":"..m
+      local subnetkey = "mo:subnets:"..s
+      redis.call("sadd", userkey, s)
+      redis.call("sadd", subnetkey, id)
     end
   end
 end
