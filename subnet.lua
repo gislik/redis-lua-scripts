@@ -6,9 +6,9 @@ local function subnet(ip, mask)
   local m
   local mask1 = tonumber(mask)
   local i = 32
-  if mask1 >= 0 and mask1 < 32 then
-    m = bit.lshift(-1, mask1)
-  elseif mask1 == 32 then
+  if mask1 > 0 and mask1 <= 32 then
+    m = bit.lshift(-1, 32-mask1)
+  elseif mask1 == 0 then
     m = 0
   else
     return nil
